@@ -1,4 +1,36 @@
 <?php
+$kb = 20;
+echo "<!-";
+flush();
+$time = explode(" ",microtime());
+$start = $time[0] + $time[1];
+for($x=0;$x<$kb;$x++){
+    echo str_pad('', 1024, '.');
+    flush();
+}
+$time = explode(" ",microtime());
+$finish = $time[0] + $time[1];
+$deltat = $finish - $start;
+echo "->";
+//echo "-> Test finished in $deltat seconds. Your speed is ". round($kb / $deltat/1000, 0)."Kb/s";
+$varspeed = round($kb / $deltat/1000, 0);
+echo $varspeed ;
+if ($varspeed > 19){
+echo "HD";
+$speed = "HD";
+}
+elseif ($varspeed > 17){
+echo "SD";
+$speed = "SD";
+}else {
+echo "LOW";
+$speed = "Low";}
+
+
+
+
+
+
 $playNowVideo = $video;
 $transformation = "{rotate:" . $video['rotation'] . ", zoom: " . $video['zoom'] . "}";
 if ($video['rotation'] === "90" || $video['rotation'] === "270") {
@@ -42,36 +74,114 @@ if (!empty($ad)) {
             ?>">
                 <video poster="<?php echo $poster; ?>" controls crossorigin 
                        class="embed-responsive-item video-js vjs-default-skin <?php echo $vjsClass; ?> vjs-big-play-centered" 
-                       id="mainVideo"  data-setup='{ "aspectRatio": "<?php echo $aspectRatio; ?>" }'>
-                    <!-- <?php echo $playNowVideo['title'], " ", $playNowVideo['filename']; ?> -->
-                    <?php
-                    echo getSources($playNowVideo['filename']);
+                       id="mainVideo"  data-setup='{"preload": "auto" "aspectRatio": "<?php echo $aspectRatio; ?>" }'>
+<?php
+$filename =  "/var/www/html/videos/".$video['filename']."_".$speed.".webm";
+$filename2 = $global['webSiteRootURL']."videos/".$video['filename']."_".$speed.".webm";
+	
+if (file_exists($filename)) {
+    echo "<source src=\"".$filename2."\" type=\"video/webm\" label=\'phone\' res=\'144\'>" ;
+} else {
+    echo "no";
+}
+
+
+$filename =  "/var/www/html/videos/".$video['filename']."_".Low.".webm";
+$filename2 = $global['webSiteRootURL']."videos/".$video['filename']."_".Low.".webm";
+
+if (file_exists($filename)) {
+    echo "<source src=\"".$filename2."\" type=\"video/webm\" label='phone' res='144'>" ;
+} else {
+    echo "no";
+}
+
+$filename =  "/var/www/html/videos/".$video['filename']."_".SD.".webm";
+$filename2 = $global['webSiteRootURL']."videos/".$video['filename']."_".SD.".webm";
+
+if (file_exists($filename)) {
+    echo "<source src=\"".$filename2."\" type=\"video/webm\" label='SD' res='480'>" ;
+} else {
+    echo "no";
+}
+
+$filename =  "/var/www/html/videos/".$video['filename']."_".HD.".webm";
+ $filename2 =  $global['webSiteRootURL']."videos/".$video['filename']."_".HD.".webm";
+
+if (file_exists($filename)) {
+    echo "<source src=\"".$filename2."\" type=\"video/webm\" label='HD' res='1080'>" ;
+} else {
+    echo "no";
+}
+
+
+$filename =  "/var/www/html/videos/".$video['filename']."_".$speed.".mp4";
+$filename2 = $global['webSiteRootURL']."videos/".$video['filename']."_".$speed.".mp4";
+
+if (file_exists($filename)) {
+    echo "<source src=\"".$filename2."\" type=\"video/mp4\" label='phone' res='144'>" ;
+} else {
+    echo "no";
+}
+
+
+
+$filename =  "/var/www/html/videos/".$video['filename']."_".Low.".mp4";
+$filename2 = $global['webSiteRootURL']."videos/".$video['filename']."_".Low.".mp4";
+
+if (file_exists($filename)) {
+   if ($speed == "HD"){
+
+$filename =  "/var/www/html/videos/".$video['filename']."_".SD.".mp4";
+$filename2 = $global['webSiteRootURL']."videos/".$video['filename']."_".SD.".mp4";
+
+if (file_exists($filename)) {
+    echo "<source src=\"".$filename2."\" type=\"video/mp4\" label='SD' res='480'>" ;
+} else {
+$filename2 = $global['webSiteRootURL']."videos/".$video['filename']."_".Low.".mp4";
+echo "<source src=\"".$filename2."\" type=\"video/mp4\" label='phone' res='144'>" ;
+  
+}
+
+	}
+	else
+    echo "<source src=\"".$filename2."\" type=\"video/mp4\" label='phone' res='144'>" ;
+} else {
+    echo "no";
+}
+
+$filename =  "/var/www/html/videos/".$video['filename']."_".SD.".mp4";
+$filename2 = $global['webSiteRootURL']."videos/".$video['filename']."_".SD.".mp4";
+
+if (file_exists($filename)) {
+    echo "<source src=\"".$filename2."\" type=\"video/mp4\" label='SD' res='480'>" ;
+} else {
+    echo "no";
+}
+
+$filename =  "/var/www/html/videos/".$video['filename']."_".HD.".mp4";
+$filename2 =  $global['webSiteRootURL']."videos/".$video['filename']."_".HD.".mp4";
+
+if (file_exists($filename)) {
+    echo "<source src=\"".$filename2."\" type=\"video/mp4\" label='HD' res='1080'>" ;
+} else {
+    echo "no";
+}
+
+
+
+
+
+
+
+
+                             //   echo getSources($playNowVideo['filename']);
                     ?>
                     <p><?php echo __("If you can't view this video, your browser does not support HTML5 videos"); ?></p>
                     <p class="vjs-no-js">
                         <?php echo __("To view this video please enable JavaScript, and consider upgrading to a web browser that"); ?>
                         <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
                     </p>
-
                 </video>
-                <?php
-                require_once $global['systemRootPath'] . 'plugin/YouPHPTubePlugin.php';
-                // the live users plugin
-                if (YouPHPTubePlugin::isEnabled("0e225f8e-15e2-43d4-8ff7-0cb07c2a2b3b")) {                   
-                    
-                    require_once $global['systemRootPath'] . 'plugin/VideoLogoOverlay/VideoLogoOverlay.php';
-                    $style = VideoLogoOverlay::getStyle();
-                    $url = VideoLogoOverlay::getLink();
-                    ?>
-                    <div style="<?php echo $style; ?>">
-                        <a href="<?php echo $url; ?>">
-                            <img src="<?php echo $global['webSiteRootURL']; ?>videos/logoOverlay.png">
-                        </a>
-                    </div>
-                    <?php
-                }
-                ?>
-
                 <?php if (!empty($logId)) { ?>
                     <div id="adUrl" class="adControl" ><?php echo __("Ad"); ?> <span class="time">0:00</span> <i class="fa fa-info-circle"></i>
                         <a href="<?php echo $global['webSiteRootURL']; ?>adClickLog?video_ads_logs_id=<?php echo $logId; ?>&adId=<?php echo $ad['id']; ?>" target="_blank" ><?php
@@ -101,13 +211,11 @@ if (!empty($ad)) {
         $('#mvideo').find('.secC').addClass('col-sm-6');
         $('#mvideo').find('.secC').addClass('col-md-6');
         $('.rightBar').addClass('compress');
-        setInterval(function () {
-            $('.principalContainer').css({'min-height': $('.rightBar').height()});
-        }, 2000);
+        setInterval(function(){ $('.principalContainer').css({'min-height':$('.rightBar').height()}); }, 2000);        
         $('#mvideo').removeClass('main-video');
-        left = $('#mvideo').find('.secC').offset().left + $('#mvideo').find('.secC').width() + 30;
+        left = $('#mvideo').find('.secC').offset().left + $('#mvideo').find('.secC').width()+30; 
         $(".compress").css('left', left);
-
+        
         t.removeClass('fa-compress');
         t.addClass('fa-expand');
     }
@@ -144,13 +252,13 @@ if (!empty($ad)) {
     }
     var player;
     $(document).ready(function () {
-
-
+        
+        
         $(window).on('resize', function () {
-            left = $('#mvideo').find('.secC').offset().left + $('#mvideo').find('.secC').width() + 30;
+            left = $('#mvideo').find('.secC').offset().left + $('#mvideo').find('.secC').width()+30; 
             $(".compress").css('left', left);
         });
-
+                  
         //Prevent HTML5 video from being downloaded (right-click saved)?
         $('#mainVideo').bind('contextmenu', function () {
             return false;
@@ -167,8 +275,8 @@ if (!empty($ad)) {
                 //this.addClass('vjs-chapters-button');
                 this.addClass('fa-compress');
                 this.addClass('fa');
-                this.controlText("<?php echo __("Teater"); ?>");
-                if (Cookies.get('compress') === "true") {
+                this.controlText("<?php echo __("Teater"); ?>");                
+                if (Cookies.get('compress')==="true") {
                     toogleEC(this);
                 }
             },
@@ -180,18 +288,16 @@ if (!empty($ad)) {
         // Register the new component
         videojs.registerComponent('teater', teater);
         player.getChild('controlBar').addChild('teater', {}, 8);
+
         player.zoomrotate(<?php echo $transformation; ?>);
-        player.on('play', function () {
-            addView(<?php echo $playNowVideo['id']; ?>);
-          });
         player.ready(function () {
 <?php
 if ($config->getAutoplay()) {
-    echo "setTimeout(function () { if(typeof player === 'undefined'){ player = videojs('mainVideo');}player.play();}, 150);";
+    echo "this.play();";
 } else {
     ?>
                 if (Cookies.get('autoplay') && Cookies.get('autoplay') !== 'false') {
-                    setTimeout(function () { if(typeof player === 'undefined'){ player = videojs('mainVideo');} player.play();}, 150);                    
+                    this.play();
                 }
 <?php }
 ?>
@@ -254,9 +360,9 @@ if ($config->getAutoplay()) {
                 console.log("Change Video");
                 fullDuration = strToSeconds('<?php echo $video['duration']; ?>');
                 changeVideoSrc(player, <?php echo json_encode(getSources($video['filename'], true)); ?>);
-                $(".ad").removeClass("ad");
-                return false;
-            });
+                            $(".ad").removeClass("ad");
+                            return false;
+                        });
 <?php } ?>
-    });
+                });
 </script>
